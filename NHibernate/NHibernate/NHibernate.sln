@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{AFF196F6-E83A-4D9E-B21C-96A4BD2A1F5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate_Practice.Infrastructure", "NHibernate_Practice.Infrastructure\NHibernate_Practice.Infrastructure.csproj", "{DB5EDDFC-1396-4E37-9BA5-23D6628A9A74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate_Practice.Membership", "NHibernate_Practice.Membership\NHibernate_Practice.Membership.csproj", "{2FAB1FEC-A607-498F-9DAF-6D53FD51C572}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate_PracticeMvc", "NHibernate_PracticeMvc\NHibernate_PracticeMvc.csproj", "{AAB85C2B-8C76-48D1-84B7-9645C25D8EA9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB5EDDFC-1396-4E37-9BA5-23D6628A9A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB5EDDFC-1396-4E37-9BA5-23D6628A9A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB5EDDFC-1396-4E37-9BA5-23D6628A9A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB5EDDFC-1396-4E37-9BA5-23D6628A9A74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FAB1FEC-A607-498F-9DAF-6D53FD51C572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FAB1FEC-A607-498F-9DAF-6D53FD51C572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FAB1FEC-A607-498F-9DAF-6D53FD51C572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FAB1FEC-A607-498F-9DAF-6D53FD51C572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB85C2B-8C76-48D1-84B7-9645C25D8EA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB85C2B-8C76-48D1-84B7-9645C25D8EA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB85C2B-8C76-48D1-84B7-9645C25D8EA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB85C2B-8C76-48D1-84B7-9645C25D8EA9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DB5EDDFC-1396-4E37-9BA5-23D6628A9A74} = {AFF196F6-E83A-4D9E-B21C-96A4BD2A1F5C}
+		{2FAB1FEC-A607-498F-9DAF-6D53FD51C572} = {AFF196F6-E83A-4D9E-B21C-96A4BD2A1F5C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7F27A8A-A3D7-4D4B-AA57-4D26654D5173}
+	EndGlobalSection
+EndGlobal

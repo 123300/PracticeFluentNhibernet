@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "NHibernate_Practice.Membership/1.0.0": {
+        "runtime": {
+          "NHibernate_Practice.Membership.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "NHibernate_Practice.Membership/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

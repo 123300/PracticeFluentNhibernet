@@ -1,0 +1,12 @@
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\bin\Debug\net6.0\NHibernate_Practice.Infrastructure.deps.json
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\bin\Debug\net6.0\NHibernate_Practice.Infrastructure.dll
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\bin\Debug\net6.0\NHibernate_Practice.Infrastructure.pdb
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.csproj.AssemblyReference.cache
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.AssemblyInfoInputs.cache
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.AssemblyInfo.cs
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.csproj.CoreCompileInputs.cache
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.dll
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\refint\NHibernate_Practice.Infrastructure.dll
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\NHibernate_Practice.Infrastructure.pdb
+D:\Saiful\NHibernate\NHibernate\NHibernate_Practice.Infrastructure\obj\Debug\net6.0\ref\NHibernate_Practice.Infrastructure.dll
