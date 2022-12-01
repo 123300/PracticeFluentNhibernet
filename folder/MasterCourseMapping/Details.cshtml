@@ -1,0 +1,55 @@
+﻿@model IEnumerable<UdvashERP.BusinessModel.Dto.Administration.MasterCourseMappingDetailsDto>
+@{
+    ViewBag.Title = "Result";
+    var masterSubjectNameSet = new HashSet<string>();
+    var masterSubjectDictionary = new Dictionary<string, int>();
+    var masterSubjectTestSet = new HashSet<string>();
+    foreach (var list in Model)
+    {
+        if (masterSubjectTestSet.Contains(list.SubjectName))
+        {
+            masterSubjectDictionary[list.SubjectName] = masterSubjectDictionary[list.SubjectName] + 1;
+
+        }
+        else
+        {
+            masterSubjectTestSet.Add(list.SubjectName);
+            masterSubjectDictionary.Add(list.SubjectName, 1);
+        }
+    }
+}
+
+<table class="table table-bordered ">
+    <thead>
+        <tr>
+            <th scope="col">Course Subject</th>
+            <th scope="col">Master Course</th>
+            <th scope="col">Master Subject</th>
+            <th scope="col">Master Chapter</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var list in Model)
+        {
+            if (masterSubjectNameSet.Contains(list.SubjectName))
+            {
+                <tr>
+                    <td>@list.MasterCourse </td>
+                    <td>@list.MasterSubject</td>
+                    <td>@list.MasterChapter</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td rowspan=@masterSubjectDictionary[list.SubjectName]>@list.SubjectName</td>
+                    <td>@list.MasterCourse </td>
+                    <td>@list.MasterSubject</td>
+                    <td>@list.MasterChapter</td>
+                </tr>
+                masterSubjectNameSet.Add(list.SubjectName);
+            }
+        }
+    </tbody>
+</table>
+

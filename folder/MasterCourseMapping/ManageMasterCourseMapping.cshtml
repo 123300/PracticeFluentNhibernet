@@ -1,0 +1,289 @@
+﻿@Styles.Render("~/Content/styledatatable")
+@Styles.Render("~/Content/bootstrap-datetimepicker")
+@Styles.Render("~/Content/fixedColumns.dataTables.min")
+@{
+    ViewBag.Title = "ManageMasterCourseMapping";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="panel panel-primary">
+    <div class="panel-body">
+        <div class="panel-body" style="">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <label class="col-md-4 control-label">Payment Status</label>
+                        <div class="col-md-8">
+                            <select id="PaymentStatus" class="form-control">
+
+                                @if (ViewBag.PaymentStatusList != null)
+                                {
+                                    foreach (var statusType in @ViewBag.PaymentStatusList)
+                                    {
+                                        <option value="@statusType.Value">@statusType.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="tillDt" hidden>
+                    <div class="col-md-12 form-group">
+                        <label class="col-md-4 control-label">Till Date</label>
+                        <div class="col-md-8">
+                            @Html.TextBox("TillDate", null, new { @class = "form-control till-date", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="dtFrm" hidden>
+                    <div class="col-md-12 form-group">
+                        <label class="col-md-4 control-label">Date From</label>
+                        <div class="col-md-8">
+                            @Html.TextBox("DateFrom", null, new { @class = "form-control date-from", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="dtTo" hidden>
+                    <div class="col-md-12 form-group">
+                        <label class="col-md-4 control-label">Date To</label>
+                        <div class="col-md-8">
+                            @Html.TextBox("DateTo", null, new { @class = "form-control date-to", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <label class="col-md-4 control-label"></label>
+                        <div class="col-md-8">
+                            <div class="form-group" style="margin-top: 15px;">
+                                <div>
+                                    <input type="button" id="btnSubmit" value="Submit" class="btn btn-primary" style="padding: 8px 45px;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="divCourseSubjectAssignPartialView">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="panel panel-primary" id="panalOne" hidden>
+    <table id="DataGrid1" class="display table table-striped table-bordered table-condensed table-hover table-responsive">
+        <thead>
+            <tr>
+                <th>Organization</th>
+                <th>Data From</th>
+                <th>Total Effective Time</th>
+                <th>New Question Answered</th>
+                <th>Average Answering Time</th>
+                <th>Review Question Answered</th>
+                <th>Question Edit Count</th>
+            </tr>
+        </thead>
+        <tbody class="text-center"></tbody>
+    </table>
+</div>
+<div class="panel panel-primary" id="panalTwo" hidden>
+    <table id="DataGrid2" class="display table table-striped table-bordered table-condensed table-hover table-responsive">
+        <thead>
+            <tr>
+                <th>Organization</th>
+                <th>Data Range</th>
+                <th>Total Effective Time</th>
+                <th>New Question Answered</th>
+                <th>Average Answering Time</th>
+                <th>Review Question Answered</th>
+                <th>Question Edit Count</th>
+                <th>Paid Amount</th>
+                <th>Payment Date</th>
+            </tr>
+        </thead>
+        <tbody class="text-center"></tbody>
+    </table>
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/datatable")
+    @Scripts.Render("~/bundles/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/bootstrap-multiselect")
+    @Scripts.Render("~/bundles/typeaheadAutoComplete")
+    @Scripts.Render("~/bundles/AutoComplete")
+    <script type="text/javascript" src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+
+
+        function dataTableRender1() {
+                var displayNo = 100;
+                if ($('#DisplayNo').val() != "" && /^\d+$/.test($('#DisplayNo').val())) {
+                    displayNo = parseInt($('#DisplayNo').val());
+                }
+                else {
+                    $('#DisplayNo').val(displayNo);
+                }
+
+            $('#DataGrid1').dataTable({
+                    destroy: true,
+                    "processing": true,
+                    searching: false,
+                    serverSide: true,
+                    "scrollX": true,
+                    "bLengthChange": false,
+                    "iDisplayLength": displayNo,
+                    "scrollCollapse": true,
+                    "scrollY": "60vh",
+                    "ordering": false,
+                    //"aoColumnDefs": [{ "bSortable": false, "aTargets": [9] }],
+                    ajax: {
+                        url: '@Url.Action("MasterCourseMappingDataTable", "MasterCourseMapping")',
+                        type: 'POST',
+                        data: function(dt) {
+                            dt.paymentStatus = $('#PaymentStatus').val();
+                        },
+                        error: function(response) {
+                            ShowErrorMessage("Data load error. Please try again.");
+                        }
+                    }
+                });
+            }
+
+            function dataTableRender2() {
+                var displayNo = 100;
+                if ($('#DisplayNo').val() != "" && /^\d+$/.test($('#DisplayNo').val())) {
+                    displayNo = parseInt($('#DisplayNo').val());
+                }
+                else {
+                    $('#DisplayNo').val(displayNo);
+                }
+
+                $('#DataGrid2').dataTable({
+                    destroy: true,
+                    "processing": true,
+                    searching: false,
+                    serverSide: true,
+                    "scrollX": true,
+                    "bLengthChange": false,
+                    "iDisplayLength": displayNo,
+                    "scrollCollapse": true,
+                    "scrollY": "60vh",
+                    "ordering": false,
+                    //"aoColumnDefs": [{ "bSortable": false, "aTargets": [9] }],
+                    ajax: {
+                        url: '@Url.Action("MasterCourseMappingDataTable", "MasterCourseMapping")',
+                        type: 'POST',
+                        data: function(dt) {
+                            dt.paymentStatus = $('#PaymentStatus').val();
+                        },
+                        error: function(response) {
+                            ShowErrorMessage("Data load error. Please try again.");
+                        }
+                    }
+                });
+            }
+
+            function dropdownRender() {
+                var text = document.querySelector("#PaymentStatus").value;
+                if (text == 1) {
+                    $('#dtFrm').hide();
+                    $('#dtTo').hide();
+                    $('#tillDt').show();
+                    $('#panalTwo').hide();
+                }
+                else if (text == -1) {
+
+                    $('#dtFrm').show();
+                    $('#dtTo').show();
+                    $('#tillDt').hide();
+                    $('#panalOne').hide();
+                }
+            }
+
+            $(document).on("change", "#PaymentStatus", function () {
+                dropdownRender();
+            });
+
+            $(document).on("click", "#btnSubmit", function () {
+                dropdownRender();
+
+                var text = document.querySelector("#PaymentStatus").value;
+                if (text == 1) {
+                    $('#panalTwo').hide();
+                    $('#panalOne').show();
+                    dataTableRender1();
+                }
+                else if (text == -1) {
+                    $('#panalOne').hide();
+                    $('#panalTwo').show();
+                    dataTableRender2();
+                }
+            });
+
+            $(document).ready(function () {
+                $('#dtFrm').hide();
+                $('#dtTo').hide();
+                $('#tillDt').show();
+                $('#panalTwo').hide();
+            });
+
+        $('.till-date').val(new Date().toISOString().slice(0, 10));
+        $('.date-from').val(new Date().toISOString().slice(0, 10));
+        $('.date-to').val(new Date().toISOString().slice(0, 10));
+
+            $('.till-date').datetimepicker({
+                format: "yyyy-mm-dd",
+                endDate: '+0d',
+                autoclose: true,
+                todayBtn: false,
+                showMeridian: true,
+                initialDate: new Date(),
+                startView: 2,
+                minView: 2,
+                maxView: 4
+            }).on('changeDate', function (ev) {
+                $("#TillDate_err_div").remove();
+                $(".till-date ").removeClass('highlight');
+                if (Date.parse($(".till-date").val()) > Date.parse($(".till-date").val())) {
+                  $(".dtmsg").text("");
+                  $(".till-date").parent().append("<div class='dtmsg' style='color:red;'>Date to can not be less than date from</div>");
+                  $("#ViewButton").prop('disabled', true);
+                }
+
+                if (Date.parse($(".till-date").val()) <= Date.parse($(".date-to").val())) {
+                    $('.dtmsg').text("");
+
+                    $("#ViewButton").removeAttr('disabled');
+                }
+            });
+
+             $('.date-from').datetimepicker({
+                format: "yyyy-mm-dd",
+                //endDate: '+0d',
+                autoclose: true,
+                todayBtn: false,
+                showMeridian: true,
+                initialDate: new Date(),
+                startView: 2,
+                minView: 2,
+                maxView: 4
+             })
+
+             $('.date-to').datetimepicker({
+                format: "yyyy-mm-dd",
+                //endDate: '+0d',
+                autoclose: true,
+                todayBtn: false,
+                showMeridian: true,
+                initialDate: new Date(),
+                startView: 2,
+                minView: 2,
+                maxView: 4
+            })
+    </script>
+}

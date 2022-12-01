@@ -1,0 +1,670 @@
+﻿@{
+    ViewBag.Title = "Add Master Mapping";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    long courseId = 0;
+    if (ViewBag.CourseId != null)
+    {
+        courseId = ViewBag.CourseId;
+    }
+
+}
+
+@section styles
+{
+    <style>
+        .IncDcrBtn {
+            padding: 0px 5px;
+        }
+
+            .IncDcrBtn > span {
+                font-size: 12px;
+            }
+
+        .badge-color {
+            position: relative;
+        }
+
+        .color-picker {
+            position: absolute;
+            left: 135px;
+            top: 0;
+            height: 34px;
+            width: 50px;
+            margin-left: -50px;
+            border-color: #cccccc;
+        }
+
+        @@media screen and (max-width: 1000px) {
+            .color-picker {
+                left: inherit;
+                right: 0;
+            }
+        }
+
+        .glyphicon-move {
+            cursor: move;
+        }
+
+        .redBorder {
+            border: 1px solid red;
+        }
+
+        .blackBorder {
+            border: 1px solid #cccccc;
+        }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            .table td input, .table td select {
+                max-width: 100%;
+            }
+    </style>
+}
+
+@using (Html.BeginForm("MasterCourseMappingAddOrEdit", "MasterCourseMapping", FormMethod.Post, new { @id = "", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Add Master Course
+        </div>
+        <div class="panel-body">
+            @Html.ValidationSummary(true)
+            @Html.Hidden("Id")
+            <div class="panel-body" style="">
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            @Html.Label("Organization", new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.DropDownList("OrganizationId", ViewBag.OrganizationList as SelectList, "Select Organization", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            @Html.Label("Program", new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @if (ViewBag.ProgramSelectList != null)
+                                {
+                                    @Html.DropDownList("ProgramId", ViewBag.ProgramSelectList as SelectList, "Select Program", new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("ProgramId", Enumerable.Empty<SelectListItem>(), "Select Program", new { @class = "form-control" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            @Html.Label("Session", new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @if (ViewBag.SessionSelectList != null)
+                                {
+                                    @Html.DropDownList("SessionId", ViewBag.SessionSelectList as SelectList, "Select Session", new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("SessionId", Enumerable.Empty<SelectListItem>(), "Select Session", new { @class = "form-control" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            @Html.Label("Course", new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @if (ViewBag.CourseSelectList != null)
+                                {
+                                    @Html.DropDownList("CourseId", ViewBag.CourseSelectList as SelectList, "Select Course", new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("CourseId", Enumerable.Empty<SelectListItem>(), "Select Course", new { @class = "form-control" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="divCourseSubjectAssignPartialView">
+
+                    </div>
+
+                    <div class="form-group" style="margin-top: 15px;">
+                        <div class="text-center">
+                            <input type="button" id="btnSubmit" value="Submit" class="btn btn-primary" style="padding: 8px 45px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@*<p>@Html.ActionLink("Back to Manage", "Index")</p>*@
+
+@section Scripts {
+    @Scripts.Render("~/bundles/typeaheadAutoComplete")
+    <script type="text/javascript" src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="~/Content/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        window.validateDropDownField("OrganizationId", "Please select Organization.");
+        window.validateDropDownField("ProgramId", "Please select Program.");
+        window.validateDropDownField("SessionId", "Please select Session.");
+        window.validateDropDownField("CourseId", "Please select Course.");
+        function checkValue(selectedVal, geaterValue = 0, canEmpty = false) {
+            var status = false;
+            if (canEmpty == false && selectedVal != null && selectedVal != "" && selectedVal > geaterValue) { status = true; }
+            return status;
+        }
+
+        $(document).on('ready', function () {
+            let courseId = '@courseId';
+            if (courseId > 0) {
+                $("#CourseId").trigger('change');
+            }
+        });
+
+        $(document).on('change', '#OrganizationId', function () {
+
+            $('#ProgramId option').remove();
+            $('#ProgramId').append("<option value=''>Select Program</option>");
+            $('#SessionId option').remove();
+            $('#SessionId').append("<option value=''>Select Session</option>");
+            $('#CourseId option').remove();
+            $('#CourseId').append("<option value=''>Select Course</option>");
+
+            var organizatonId = $(this).val();
+            $("#divCourseSubjectAssignPartialView").html('');
+            if (checkValue(organizatonId) == true) {
+                $.ajax({
+                    url: $("body").attr("data-project-root") + "Administration/CommonAjax/LoadProgram",
+                    type: "POST",
+                    data: { organizationIds: organizatonId, isAuthorized: true },
+                    beforeSend: function () {
+                        $.blockUI({
+                            timeout: 0,
+                            message: '<h1><img src="/Content/Image/ajax-loader.gif" /> Processing...</h1>'
+                        });
+                    },
+                    success: function (response) {
+                        $.unblockUI();
+                        if (response.IsSuccess) {
+                            if (response.returnProgramList != null && response.returnProgramList.length > 0) {
+                                $.each(response.returnProgramList, function (i, v) {
+                                    $('#ProgramId').append($('<option>').text(v.Text).attr('value', v.Value));
+                                });
+                            }
+                        } else {
+                            showErrorMessage(response.Message)
+                        }
+                    },
+                    complete: function () { $.unblockUI(); },
+                    error: function (response) { $.unblockUI(); }
+                });
+            }
+        });
+
+        $(document).on('change', '#ProgramId', function () {
+
+            $('#SessionId option').remove();
+            $('#SessionId').append("<option value=''>Select Session</option>");
+            $('#CourseId option').remove();
+            $('#CourseId').append("<option value=''>Select Course</option>");
+
+            var organizatonId = $("#OrganizationId").val();
+            $("#divCourseSubjectAssignPartialView").html('');
+            var programId = $("#ProgramId").val();
+            if (checkValue(organizatonId) == true && checkValue(programId) == true) {
+                $.ajax({
+                    type: "POST",
+                    url: $("body").attr("data-project-root") + "Administration/CommonAjax/LoadSession",
+                    data: { organizationIds: organizatonId, programIds: programId, isAuthorized: true },
+                    beforeSend: function () {
+                        $.blockUI({
+                            timeout: 0,
+                            message: '<h1><img src="/Content/Image/ajax-loader.gif" /> Processing...</h1>'
+                        });
+                    },
+                    success: function (response) {
+                        $.unblockUI();
+                        if (response.IsSuccess) {
+                            $.each(response.returnSessionList, function (i, v) {
+                                $('#SessionId').append($('<option>').text(v.Text).attr('value', v.Value));
+                            });
+                        } else {
+                            showErrorMessage(response.Message)
+                        }
+                    },
+                    complete: function (response) { $.unblockUI(); },
+                    error: function (response) { $.unblockUI(); }
+                });
+            }
+        });
+
+        $(document).on('change', '#SessionId', function () {
+
+            $('#CourseId option').remove();
+            $('#CourseId').append("<option value=''>Select Course</option>");
+
+            var organizatonId = $("#OrganizationId").val();
+            $("#divCourseSubjectAssignPartialView").html('');
+            var programId = $("#ProgramId").val();
+            var sessionId = $("#SessionId").val();
+            if (checkValue(organizatonId) == true && checkValue(programId) == true && checkValue(sessionId) == true) {
+                $.ajax({
+                    type: "POST",
+                    url: $("body").attr("data-project-root") + "Administration/CommonAjax/LoadCourse",
+                    data: { organizationIds: organizatonId, programIds: programId, sessionIds: sessionId, isAuthorized: true },
+                    beforeSend: function () {
+                        $.blockUI({
+                            timeout: 0,
+                            message: '<h1><img src="/Content/Image/ajax-loader.gif" /> Processing...</h1>'
+                        });
+                    },
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            $.each(response.returnCourse, function (i, v) {
+                                $('#CourseId').append($('<option>').text(v.Text).attr('value', v.Value));
+                            });
+
+                            $.unblockUI();
+
+                        } else {
+                            showErrorMessage(response.Message)
+                        }
+                    },
+                    complete: function (response) { $.unblockUI(); },
+                    error: function (response) { $.unblockUI(); }
+                });
+            }
+        });
+
+        $(document).on('change', '#CourseId', function () {
+            $("#divCourseSubjectAssignPartialView").html('');
+            var courseId = $("#CourseId").val();
+
+            if (checkValue(courseId) == true) {
+                $.ajax({
+                    type: "POST",
+                    url: $("body").attr("data-project-root") + "Administration/MasterCourseMapping/GetCourseSubjectAssignPartialView",
+                    data: { courseId: courseId },
+                    beforeSend: function () {
+                        $.blockUI({
+                            timeout: 0,
+                            message: '<h1><img src="/Content/Image/ajax-loader.gif" /> Processing...</h1>'
+                        });
+                    },
+                    success: function (response) {
+                        $("#divCourseSubjectAssignPartialView").html(response);
+                        $.unblockUI();
+                    },
+                    complete: function (response) { $.unblockUI(); },
+                    error: function (response) { $.unblockUI(); }
+                });
+            }
+        });
+
+        $(document).on('change', '#divCourseMapping .masterCourse', function (e) {
+            //data-row-serial
+            //data-courseSubjectId
+            //assignMasterCourse_CourseSubjectId_courseSubject.Id_serial_1
+            let masterCourseControl = $(this);
+            let courseSubjectId = masterCourseControl.attr('data-courseSubjectId');
+            let rowSerial = masterCourseControl.attr('data-row-serial');
+            let parentRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${rowSerial}`);
+
+            parentRow.find('.masterSubject option').remove();
+            parentRow.find('.masterSubject').append("<option value=''>Select Master Subject</option>");
+
+            parentRow.find('.masterChapter option').remove();
+            parentRow.find('.masterChapter').append("<option value=''>Select Master Chapter</option>");
+
+            let masterSubjectControl = parentRow.find('.masterSubject');
+
+            var masterCourseId = masterCourseControl.val();
+            if (masterCourseId != "") {
+                let url = $("body").attr("data-project-root") + "Administration/CommonAjax/LoadMasterSubject";
+                let data = { masterCourseId: masterCourseId };
+                AjaxCall(url, data, masterSubjectControl);
+            }
+        });
+
+        $(document).on('change', '#divCourseMapping .masterSubject', function (e) {
+            //data-row-serial
+            //data-courseSubjectId
+            //assignMasterCourse_CourseSubjectId_courseSubject.Id_serial_1
+            let masterSubjectControl = $(this);
+            let courseSubjectId = masterSubjectControl.attr('data-courseSubjectId');
+            let rowSerial = masterSubjectControl.attr('data-row-serial');
+            let parentRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${rowSerial}`);
+
+            parentRow.find('.masterChapter option').remove();
+            parentRow.find('.masterChapter').append("<option value=''>Select Master Chapter</option>");
+
+
+            let masterChapterControl = parentRow.find('.masterChapter');
+
+            let masterCourseId = parentRow.find('.masterCourse').val();
+            var masterSubjectId = masterSubjectControl.val();
+
+            if (masterSubjectId != "" && masterCourseId != "") {
+                let url = $("body").attr("data-project-root") + "Administration/CommonAjax/LoadMasterChapter";
+                let data = { masterCourseId: masterCourseId, masterSubjectId: masterSubjectId };
+                AjaxCall(url, data, masterChapterControl, true);
+            }
+        });
+
+        function AjaxCall(url, data, control, isAddAll = false) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                cache: false,
+                async: true,
+                data: data,
+                beforeSend: function () {
+                    $.blockUI({
+                        timeout: 0,
+                        message: '<h1><img src="/Content/Image/ajax-loader.gif" /> Processing...</h1>'
+                    });
+                },
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        if (isAddAll && response.returnList.length > 0) {
+                            control.append("<option value='0'>All</option>");
+                        }
+                        $.each(response.returnList, function (i, v) {
+                            control.append($('<option>').text(v.Text).attr('value', v.Value));
+                        });
+                    }
+                    else {
+                        $.fn.customMessage({
+                            displayMessage: response.Message,
+                            displayMessageType: "error",
+                        });
+                    }
+                    $.unblockUI();
+                },
+                complete: function () {
+                    $.unblockUI();
+                },
+                error: function (result) {
+                    $.unblockUI();
+                }
+            });
+        }
+
+        $(document).on('click', '.btnAddCourseMapping', function (e) {
+            //debugger;
+            //data-row-serial
+            //data-courseSubjectId
+            //assignMasterCourse_CourseSubjectId_courseSubject.Id_serial_1
+            let addIcon = $(this);
+            let courseSubjectId = addIcon.attr('data-courseSubjectId');
+            let rowMaxSerial = parseInt(addIcon.attr('data-row-max-serial'));
+            let newRow = $("#tempCourseMappingData").html();
+            $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${rowMaxSerial}`).after(newRow);
+
+            let firstRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_1`);
+
+            let nextRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${rowMaxSerial}`).next();
+            nextRow.addClass(`assignMasterCourse_CourseSubjectId_${courseSubjectId}`);
+
+            let rowCount = 0;
+            $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}`).each(function (index) {
+                $(this).removeAttr('class');
+                $(this).attr('class', `assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${index + 1}`);
+                $(this).addClass(`assignMasterCourse_CourseSubjectId_${courseSubjectId}`);
+                $(this).addClass(`tr_assignMasterCourse`);
+
+                $(this).attr('data-courseSubjectId', courseSubjectId);
+                $(this).attr('data-row-serial', index + 1);
+
+                $(this).find('.masterCourse').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.masterCourse').attr('data-row-serial', index + 1);
+
+                $(this).find('.masterSubject').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.masterSubject').attr('data-row-serial', index + 1);
+
+                $(this).find('.masterChapter').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.masterChapter').attr('data-row-serial', index + 1);
+
+                $(this).find('.btnRemoveCourseMapping').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.btnRemoveCourseMapping').attr('data-row-serial', index + 1);
+
+                rowCount++;
+            });
+
+            firstRow.find('td').first().attr('rowspan', rowCount);
+            addIcon.attr('data-row-max-serial', rowCount);
+        });
+
+        $(document).on('click', '.btnRemoveCourseMapping', function (e) {
+            //debugger;
+            //data-row-serial
+            //data-courseSubjectId
+            //assignMasterCourse_CourseSubjectId_courseSubject.Id_serial_1
+            let removeIcon = $(this);
+            let courseSubjectId = removeIcon.attr('data-courseSubjectId');
+            let rowSerial = parseInt(removeIcon.attr('data-row-serial'));
+
+            let firstRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_1`);
+
+            $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${rowSerial}`).remove();
+
+            let rowCount = 0;
+            $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}`).each(function (index) {
+                $(this).removeAttr('class');
+                $(this).attr('class', `assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${index + 1}`);
+                $(this).addClass(`assignMasterCourse_CourseSubjectId_${courseSubjectId}`);
+                $(this).addClass(`tr_assignMasterCourse`);
+
+                $(this).attr('data-courseSubjectId', courseSubjectId);
+                $(this).attr('data-row-serial', index + 1);
+
+                $(this).find('.masterCourse').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.masterCourse').attr('data-row-serial', index + 1);
+
+                $(this).find('.masterSubject').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.masterSubject').attr('data-row-serial', index + 1);
+
+                $(this).find('.masterChapter').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.masterChapter').attr('data-row-serial', index + 1);
+
+                $(this).find('.btnRemoveCourseMapping').attr('data-courseSubjectId', courseSubjectId);
+                $(this).find('.btnRemoveCourseMapping').attr('data-row-serial', index + 1);
+            });
+
+            let maxSerial = parseInt($(`.btnAddCourseMapping_courseSubjectId_${courseSubjectId}`).attr('data-row-max-serial'));
+            $(`.btnAddCourseMapping_courseSubjectId_${courseSubjectId}`).attr('data-row-max-serial', maxSerial - 1);
+
+            firstRow.find('td').first().attr('rowspan', maxSerial - 1);
+        });
+
+        $(document).on('change', '#divCourseMapping .masterCourse, #divCourseMapping .masterSubject, #divCourseMapping .masterChapter', function () {
+            let value = $(this).val();
+            if (value == null || value.length == 0) {
+                //$(this).removeClass('blackBorder');
+                //$(this).addClass('redBorder');
+            }
+            else {
+                $(this).removeClass('redBorder');
+                $(this).addClass('blackBorder');
+            }
+        });
+
+        function DropdownValidation(id, value, fieldName) {
+            var isSuccess = true;
+
+            if (value == null || value.length <= 0 || value == '0') {
+                showErrorMessageBelowCtrl(id, "", false);
+                showErrorMessageBelowCtrl(id, `Please Select ${fieldName}`, true);
+                isSuccess = false;
+            }
+
+            return isSuccess;
+        }
+
+        $(document).on('click', '#btnSubmit', function () {
+            var organizatonId = $("#OrganizationId").val();
+            var programId = $("#ProgramId").val();
+            var sessionId = $("#SessionId").val();
+            var courseId = $("#CourseId").val();
+            let isSuccess = true;
+
+            if (DropdownValidation("OrganizationId", organizatonId, "Organization") == false) {
+                isSuccess = false;
+            }
+            if (DropdownValidation("ProgramId", programId, "Program") == false) {
+                isSuccess = false;
+            }
+            if (DropdownValidation("SessionId", sessionId, "Session") == false) {
+                isSuccess = false;
+            }
+            if (DropdownValidation("CourseId", courseId, "Course") == false) {
+                isSuccess = false;
+            }
+
+            $('#divCourseMapping .masterCourse, #divCourseMapping .masterSubject, #divCourseMapping .masterChapter').each(function () {
+                let value = $(this).val();
+                let serial = $(this).attr("data-row-serial");
+                let courseSubjectId = $(this).attr("data-courseSubjectId");
+
+                if (value == null || value.length == 0) {
+                    if (serial == "1") {
+                        let parentRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_${serial} `)
+                        let masterCourseControl = parentRow.find('.masterCourse');
+                        let masterSubjectControl = parentRow.find('.masterSubject');
+                        let masterChapterControl = parentRow.find('.masterChapter');
+
+                        if ((masterCourseControl.val() != null && masterCourseControl.val().length > 0) || (masterSubjectControl.val() != null && masterSubjectControl.val().length > 0) || (masterChapterControl.val() != null && masterChapterControl.val().length > 0)) {
+                            if (masterCourseControl.val() == null || masterCourseControl.val().length == 0) {
+                                masterCourseControl.addClass('redBorder');
+                                isSuccess = false;
+                            }
+
+                            if (masterSubjectControl.val() == null || masterSubjectControl.val().length == 0) {
+                                masterSubjectControl.addClass('redBorder');
+                                isSuccess = false;
+                            }
+
+                            if (masterChapterControl.val() == null || masterChapterControl.val().length == 0) {
+                                masterChapterControl.addClass('redBorder');
+                                isSuccess = false;
+                            }
+                        }
+                    }
+                    else {
+                        $(this).addClass('redBorder');
+                        isSuccess = false;
+                    }
+                }
+            });
+
+            var allMasterChapterList = {};
+            var masterChapterErrorMessageList = [];
+            var MasterSubjectChapterList = [];
+
+            $(".tr_assignMasterCourse").each(function () {
+                var row = $(this);
+                let courseSubjectId = $(this).attr('data-courseSubjectId');
+
+                let firstRow = $(`.assignMasterCourse_CourseSubjectId_${courseSubjectId}_serial_1 `);
+                let courseSubjectName = firstRow.find('.courseSubjectName').val();
+
+                let masterCourse = row.find('.masterCourse');
+                let masterCourseId = masterCourse.val();
+                let masterCourseName = masterCourse.find('option:selected').text();
+
+                let masterSubject = row.find('.masterSubject');
+                let masterSubjectId = masterSubject.val();
+                let masterSubjectName = masterSubject.find('option:selected').text();
+
+                let masterChapter = row.find('.masterChapter');
+                let masterChapterId = masterChapter.val();
+                let masterChapterName = masterChapter.find('option:selected').text();
+
+                if (allMasterChapterList[`${courseSubjectId}_${masterCourseId}_${masterSubjectId}`]) {
+                    masterChapterErrorMessageList.push(allMasterChapterList[`${courseSubjectId}_${masterCourseId}_${masterSubjectId}`]);
+                }
+                else {
+                    if (masterChapterId == "0") {
+                        allMasterChapterList[`${courseSubjectId}_${masterCourseId}_${masterSubjectId}`] = `Subject: ${masterCourseName} is already mapped to Master Course: ${masterCourseName}, Master Subject: ${masterSubjectName}, Master Chapter: ${masterChapterName}`;
+                    }
+
+                    if (courseSubjectId > 0 && masterCourseId > 0 && masterSubjectId > 0 && masterChapterId != "") {
+                        let masterSubjectChapter = {};
+                        masterSubjectChapter.CourseSubjectId = courseSubjectId;
+                        masterSubjectChapter.MasterCourseId = masterCourseId;
+                        masterSubjectChapter.MasterSubjectId = masterSubjectId;
+                        masterSubjectChapter.MasterChapterId = masterChapterId;
+
+                        MasterSubjectChapterList.push(masterSubjectChapter);
+                    }
+                }
+            });
+
+            if (masterChapterErrorMessageList.length > 0) {
+                let errorMessage = masterChapterErrorMessageList.join("\r\n");
+                $.fn.customMessage({
+                    displayMessage: errorMessage,
+                    displayMessageType: "error",
+                });
+
+                $("html, body").animate({ scrollTop: 0 });
+                isSuccess = false;
+            }
+
+            if (isSuccess == false) {
+                return false;
+            }
+            var data = {};
+            data.CourseId = parseInt(courseId);
+            data.MappingDetails = MasterSubjectChapterList;
+
+            $.ajax({
+                type: "POST",
+                url: $("body").attr("data-project-root") + "Administration/MasterCourseMapping/MasterCourseMappingAddOrEdit",
+                dataType: 'json',
+                data: data,
+                beforeSend: function () {
+                    $.blockUI({
+                        timeout: 0,
+                        message: '<h1><img src="/Content/Image/ajax-loader.gif" /> Processing...</h1>'
+                    });
+                },
+                success: function (result) {
+                    $.unblockUI();
+                    if (result.IsSuccess) {
+                        $.fn.customMessage({
+                            displayMessage: result.Message,
+                            displayMessageType: "s",
+                        });
+                        //window.location.href = "/Administration/MasterLecture/CreateMasterLecture?message=" + result.responseMsg + "";
+                    } else {
+                        $.fn.customMessage({
+                            displayMessage: result.Message,
+                            displayMessageType: "error",
+                        });
+                    }
+                    $("html, body").animate({ scrollTop: 0 });
+                },
+                complete: function () {
+                    $.unblockUI();
+                },
+                error: function (result) {
+                    $.unblockUI();
+                }
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,117 @@
+﻿@using UdvashERP.Areas.Administration.Models.ViewModel
+@using UdvashERP.BusinessModel.Dto
+@{
+    Layout = null;
+
+    //IList<CourseSubject> courseSubjectList = ViewBag.CourseSubjectList;
+    //courseSubjectList = courseSubjectList ?? new List<CourseSubject>();
+
+    IList<NameValueDto> masterCourseList = ViewBag.MasterCourseList;
+    masterCourseList = masterCourseList ?? new List<NameValueDto>();
+
+    //List<MasterCourseMapping> masterCourseMappingList = ViewBag.MasterCourseMappingList;
+    //masterCourseMappingList = masterCourseMappingList ?? new List<MasterCourseMapping>();
+
+    List<AddMasterCourseMappingViewModel> mappingViewModelList = ViewBag.MappingViewModelList;
+    int i = 0;
+}
+
+<strong>Master Course Mapping</strong>
+<div id="divCourseMapping">
+    <table class="table table-bordered table-condensed table-responsive nowrap">
+        <thead style="text-align: left;">
+            <tr>
+                <th class="col-xs-2" style="text-align: center;">Course Subject</th>
+                <th>Master Course</th>
+                <th>Subject</th>
+                <th>Chapter</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mappingViewModel in mappingViewModelList)
+            {
+                int j = 1;
+                foreach (var row in mappingViewModel.MappingRowList)
+                {
+                    <tr class="assignMasterCourse_CourseSubjectId_@(mappingViewModel.CourseSubjectId)_serial_@j assignMasterCourse_CourseSubjectId_@(mappingViewModel.CourseSubjectId) tr_assignMasterCourse" data-row-serial="@j" data-courseSubjectId="@mappingViewModel.CourseSubjectId">
+                        @{
+                            string coursName = $"CourseId_{i}";
+                        }
+
+                        @if (j == 1)
+                        {
+                            <td class="text-center" rowspan="@mappingViewModel.RowSpan">
+                                @mappingViewModel.SubjectName
+                                <input type="hidden" class="courseSubjectId" value="@mappingViewModel.CourseSubjectId" />
+                                <input type="hidden" class="courseSubjectName" value="@mappingViewModel.SubjectName" />
+                                @if (row.IsDeletedSubject)
+                                {
+                                    <p>
+                                        <strong class="text-danger"></strong>
+                                    </p>
+                                }
+                            </td>
+                        }
+
+                        <td class="text-center">
+                            @Html.DropDownList(coursName, row.MasterCourseSelectList as SelectList, "Select Master Course", new { @class = "masterCourse form-control", data_courseSubjectId = mappingViewModel.CourseSubjectId, data_row_serial = j })
+                        </td>
+                        <td class="text-center">
+                            @Html.DropDownList(coursName, row.MasterSubjectSelectList as SelectList, "Select Master Subject", new { @class = "masterSubject form-control", data_courseSubjectId = mappingViewModel.CourseSubjectId, data_row_serial = j })
+                        </td>
+                        <td class="text-center">
+                            @Html.DropDownList(coursName, row.MasterChapterSelectList as SelectList, "Select Master Chapter", new { @class = "masterChapter form-control", data_courseSubjectId = mappingViewModel.CourseSubjectId, data_row_serial = j })
+                        </td>
+                        @if (j == 1)
+                        {
+                            <td>
+                                <span class="glyphicon btn btn-success glyphicon-plus-sign btnAddCourseMapping btnAddCourseMapping_courseSubjectId_@mappingViewModel.CourseSubjectId" data-courseSubjectId="@mappingViewModel.CourseSubjectId" data-row-max-serial="@mappingViewModel.RowSpan"></span>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <span class="glyphicon btn btn-danger glyphicon-minus-sign btnRemoveCourseMapping" data-coursesubjectid="@mappingViewModel.CourseSubjectId" data-row-serial="@j"></span>
+                            </td>
+                        }
+
+                        @{
+                            i++; j++;
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<table class="table text-center table-bordered" style="display:none;">
+    <tbody id="tempCourseMappingData">
+        <tr>
+            <td class="text-center">
+                <select class="masterCourse form-control">
+                    <option value="">Select Master Course</option>
+                    @foreach (var masterCourse in masterCourseList)
+                    {
+                        <option value="@masterCourse.Value">@masterCourse.Name</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <select class="masterSubject form-control">
+                    <option value="">Select Subject</option>
+                </select>
+            </td>
+            <td>
+                <select class="masterChapter form-control">
+                    <option value="">Select Chapter</option>
+                </select>
+            </td>
+            <td>
+                <span class="glyphicon btn btn-danger glyphicon-minus-sign btnRemoveCourseMapping"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
